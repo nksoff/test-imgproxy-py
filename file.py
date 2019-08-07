@@ -4,9 +4,21 @@ import hmac
 import textwrap
 
 
-key = bytes.fromhex("943b421c9eb07c830af81030552c86009268de4e532ba2ee2eab8247c6da0881")
-salt = bytes.fromhex("520f986b998545b4785e0defbc4f3c1203f22de2374a3d53cb7a7fe9fea309c5")
+def fromhex(ustring):
+    if str is bytes:
+        return bytearray.fromhex(ustring)
+    return bytes.fromhex(ustring)
 
+
+def bytes_to_string(maybe_string):
+    try:
+        return maybe_string.decode()
+    except AttributeError:
+        return maybe_string
+
+
+key = fromhex(u"943b421c9eb07c830af81030552c86009268de4e532ba2ee2eab8247c6da0881")
+salt = fromhex(u"520f986b998545b4785e0defbc4f3c1203f22de2374a3d53cb7a7fe9fea309c5")
 
 url = b"http://img.example.com/pretty/image.jpg"
 
@@ -27,9 +39,10 @@ digest = hmac.new(key, msg=salt+path, digestmod=hashlib.sha256).digest()
 
 protection = base64.urlsafe_b64encode(digest).rstrip(b"=")
 
-url = b'/%s%s' % (
-    protection,
-    path,
+url = '/%s%s' % (
+    protection.decode(),
+    path.decode(),
 )
 
-print(url.decode())
+print(bytes_to_string(url))
+
